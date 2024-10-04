@@ -1,0 +1,6 @@
+@GeneradorCompras_HostAddress = http://localhost:5214
+
+GET {{GeneradorCompras_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
