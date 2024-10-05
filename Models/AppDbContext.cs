@@ -5,7 +5,11 @@ namespace GeneradorCompras.Models
 {
     public class AppDbContext : DbContext
     {
-        public DbSet<MyEntity> MyEntities { get; set; }
+        public DbSet<Compra> Compras { get; set; }
+        public DbSet<Negocio> Negocios { get; set; }
+        public DbSet<Product> Productos { get; set; }
+        public DbSet<Tarjeta> Tarjetas { get; set; }
+        public DbSet<User> Usuarios { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)

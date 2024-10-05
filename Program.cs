@@ -14,6 +14,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=Proyecto.db"));
 
 
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
