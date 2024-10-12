@@ -5,7 +5,7 @@ namespace GeneradorCompras.Models.Service
 {
     public class ProductService : IProductService
     {
-        public async Task<List<Product>> GenarateProduct(int Count)
+        public List<Product> GenerateProduct(int Count)
         {
             var faker = new Faker<Product>()
                 .RuleFor(P => P.ID, f => f.IndexFaker + 1)

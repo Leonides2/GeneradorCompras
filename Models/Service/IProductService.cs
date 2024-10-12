@@ -2,6 +2,6 @@
 {
     public interface IProductService
     {
-        Task<List<Product>> GenarateProduct(int Count);
+        List<Product> GenerateProduct(int Count);
     }
 }

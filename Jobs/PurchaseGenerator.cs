@@ -1,25 +1,21 @@
 ﻿using GeneradorCompras.Models;
+using GeneradorCompras.Models.Service;
 using Quartz;
 
 namespace GeneradorCompras.Jobs
 {
     public class PurchaseGenerator : IJob
     {
-        public Compra GenerateRandomPurchase()
+        private readonly ICompraGenerator compraGenerator;
+
+        public PurchaseGenerator(ICompraGenerator _compraGenerator)
         {
-            return new Compra
-            {
-                ID = 1,
-                ProductName = "Lavadora",
-                Count = 1,
-                CreditCard_N = 100000000,
-                IsSuccess = true
-            };
+            compraGenerator = _compraGenerator;
         }
 
         public Task Execute(IJobExecutionContext context)
         {
-            Console.WriteLine($"Datos de Compra: {GenerateRandomPurchase()}");
+            Console.WriteLine($"Datos de Compra: {compraGenerator.GeneratePurchase(1)}");
             return Task.CompletedTask;
         }
     }
