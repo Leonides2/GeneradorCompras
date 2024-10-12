@@ -1,6 +1,9 @@
 using GeneradorCompras.Models;
 using GeneradorCompras.Models.Interface;
 using Microsoft.EntityFrameworkCore;
+using Quartz;
+using Quartz.Impl;
+using System.Collections.Specialized;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,5 +37,9 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// you can have base properties
+var properties = new NameValueCollection();
+
 
 app.Run();
