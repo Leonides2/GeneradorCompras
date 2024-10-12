@@ -16,6 +16,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=Proyecto.db"));
 
+builder.Services.AddEventStoreClient(new Uri(builder.Configuration.GetValue("EventStore","")));
 
 
 
