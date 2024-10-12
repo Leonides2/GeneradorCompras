@@ -1,6 +1,8 @@
 ﻿using GeneradorCompras.Models;
 using GeneradorCompras.Models.Service;
 using Quartz;
+using System.Text.Json;
+
 
 namespace GeneradorCompras.Jobs
 {
@@ -13,10 +15,13 @@ namespace GeneradorCompras.Jobs
             compraGenerator = _compraGenerator;
         }
 
-        public Task Execute(IJobExecutionContext context)
+        public async Task Execute(IJobExecutionContext context)
         {
-            Console.WriteLine($"Datos de Compra: {compraGenerator.GeneratePurchase(1)}");
-            return Task.CompletedTask;
+            var compra = compraGenerator.GeneratePurchase(1);
+
+            Console.WriteLine($"Datos de Compra: {JsonSerializer.Serialize(compra)}");
+            
+            await Task.CompletedTask;
         }
     }
 }

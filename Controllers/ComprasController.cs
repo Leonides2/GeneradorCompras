@@ -1,4 +1,5 @@
-﻿using GeneradorCompras.Models;
+﻿using GeneradorCompras.Jobs;
+using GeneradorCompras.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Quartz;
@@ -18,14 +19,15 @@ namespace GeneradorCompras.Controllers
         }
 
         [HttpGet("/PurchaseStream")]
-        public async Task<string> Subscribe()
+        public async Task<object> Subscribe()
         {
             ISchedulerFactory factory = new StdSchedulerFactory();
 
-            var scheduler = await factory.GetScheduler();
+            IScheduler scheduler = await factory.GetScheduler();
             await scheduler.Start();
 
-            var job = JobBuilder.Create()
+            
+            IJobDetail job = JobBuilder.Create<PurchaseGenerator>()
                 .WithIdentity("UID", "UID")
                 .Build();
 
@@ -34,9 +36,11 @@ namespace GeneradorCompras.Controllers
                 .WithSimpleSchedule(x => x.WithIntervalInSeconds(5).RepeatForever())
                 .Build();
 
-            await scheduler.ScheduleJob(job, trigger);
+            var result = await scheduler.ScheduleJob(job, trigger);
 
-            return "Se inicio el stream de compras";
+
+            return result;
+                //"Se inicio el stream de compras";
         }
 
         [HttpGet]

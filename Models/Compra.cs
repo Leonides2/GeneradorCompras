@@ -1,4 +1,6 @@
-﻿namespace GeneradorCompras.Models
+﻿using System.Text.Json.Serialization;
+
+namespace GeneradorCompras.Models
 {
     public class Compra
     {
@@ -8,5 +10,6 @@
        public required double Total { get; set; }
 
        public bool IsSuccess { get; set; }
+
     }
 }
