@@ -1,6 +1,8 @@
 ﻿using GeneradorCompras.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Quartz;
+using Quartz.Impl;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -14,6 +16,29 @@ namespace GeneradorCompras.Controllers
         public ComprasController(AppDbContext context) { 
             _context = context;
         }
+
+        [HttpGet("/PurchaseStream")]
+        public async Task<string> Subscribe()
+        {
+            ISchedulerFactory factory = new StdSchedulerFactory();
+
+            var scheduler = await factory.GetScheduler();
+            await scheduler.Start();
+
+            var job = JobBuilder.Create()
+                .WithIdentity("UID", "UID")
+                .Build();
+
+            ITrigger trigger = TriggerBuilder.Create()
+                .WithIdentity("UID", "UID")
+                .WithSimpleSchedule(x => x.WithIntervalInSeconds(5).RepeatForever())
+                .Build();
+
+            await scheduler.ScheduleJob(job, trigger);
+
+            return "Se inicio el stream de compras";
+        }
+
         [HttpGet]
         public async Task<List<Compra>> Get()
         {
