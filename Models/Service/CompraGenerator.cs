@@ -15,7 +15,6 @@ namespace GeneradorCompras.Models.Service
 
             var faker = new Faker<Compra>()
                 .RuleFor(P => P.ID, f => f.IndexFaker + 1)
-                .RuleFor(P => P.CreditCard_N, f => f.Finance.CreditCardNumber())
                 .RuleFor(P => P.Details, f => productService.GenerateProduct(f.Random.Int(1, 5)))
                 .RuleFor(P => P.Total, f => 0)
                 .RuleFor(P => P.IsSuccess, f => f.Random.Bool());

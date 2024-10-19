@@ -1,3 +1,4 @@
+using EventStore.Client;
 using GeneradorCompras.Jobs;
 using GeneradorCompras.Models;
 using GeneradorCompras.Models.Interface;
@@ -21,11 +22,24 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=Proyecto.db"));
 
-//builder.Services.AddEventStoreClient(new Uri(builder.Configuration.GetValue<string>("EventStore")));
+
+var settings = EventStoreClientSettings.Create(builder.Configuration.GetValue<string>("EventStore"));
+settings.CreateHttpMessageHandler = () =>
+    new SocketsHttpHandler
+    {
+        SslOptions =
+        {
+            RemoteCertificateValidationCallback = delegate { return true; }
+        }
+    };
+
+builder.Services.AddSingleton(new EventStoreClient(settings));
 
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICompraGenerator, CompraGenerator>();
+builder.Services.AddScoped<INegocioService, NegocioService>();
+
 
 builder.Services.AddQuartz(q =>
 {

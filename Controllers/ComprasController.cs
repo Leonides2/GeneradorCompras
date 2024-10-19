@@ -1,9 +1,12 @@
-﻿using GeneradorCompras.Jobs;
+﻿using EventStore.Client;
+using GeneradorCompras.Jobs;
 using GeneradorCompras.Models;
+using GeneradorCompras.Models.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Quartz;
 using Quartz.Impl;
+using System.Text.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -14,52 +17,64 @@ namespace GeneradorCompras.Controllers
     public class ComprasController : ControllerBase
     {   
         private readonly AppDbContext _context;
-        public ComprasController(AppDbContext context) { 
+        private readonly EventStoreClient client;
+        private readonly ICompraGenerator compraGenerator;
+        private readonly INegocioService negocioService;
+        public ComprasController(AppDbContext context, EventStoreClient eventStore, ICompraGenerator _compraGenerator, INegocioService _negocioService) { 
             _context = context;
+            client = eventStore;
+            compraGenerator = _compraGenerator;
+            negocioService = _negocioService;
         }
 
-        [HttpGet("/PurchaseStream")]
+        [HttpGet("/SubirUnaCompra")]
         public async Task<object> Subscribe()
         {
-            ISchedulerFactory factory = new StdSchedulerFactory();
 
-            IScheduler scheduler = await factory.GetScheduler();
-            await scheduler.Start();
+            var compraList = compraGenerator.GeneratePurchase(1);
 
+            var compra = compraList.Select(u => u);
+
+            foreach (Compra com in compra) {
+                var eventData = new EventData(Uuid.NewUuid(),
+                               nameof(compra),
+                               JsonSerializer.SerializeToUtf8Bytes(com));
+
+                var writeResult = await client.AppendToStreamAsync("test",
+                                                      StreamState.Any,
+                                                      new[] { eventData });
+                return writeResult;
+            }
+
+            return "Hello";
             
-            IJobDetail job = JobBuilder.Create<PurchaseGenerator>()
-                .WithIdentity("UID", "UID")
-                .Build();
-
-            ITrigger trigger = TriggerBuilder.Create()
-                .WithIdentity("UID", "UID")
-                .WithSimpleSchedule(x => x.WithIntervalInSeconds(5).RepeatForever())
-                .Build();
-
-            var result = await scheduler.ScheduleJob(job, trigger);
-
-
-            return result;
-                //"Se inicio el stream de compras";
         }
 
         [HttpGet]
-        public async Task<List<Compra>> Get()
+        [Route("GenerateResourcer")]
+        public string GeenerarRecursos()
         {
-            return await _context.Compras.ToListAsync();
+            negocioService.GenerateNegocios(100);
+
+            return "RecursosGenerados";
         }
 
         // GET api/<ComprasController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet]
+        [Route("ReturnNegocios")]
+        public async Task<IActionResult> Get()
         {
-            return "value";
+            var list = await negocioService.GetNegocios();
+            return Ok(list);
         }
 
         // POST api/<ComprasController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpGet]
+        [Route("EliminarNegocios")]
+        public string eliminarNegocios()
         {
+            negocioService.DeleteNegocios();
+            return "Negocios eliminados";
         }
 
         // PUT api/<ComprasController>/5
