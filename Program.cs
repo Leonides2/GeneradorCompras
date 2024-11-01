@@ -39,6 +39,8 @@ builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICompraGenerator, CompraGenerator>();
 builder.Services.AddScoped<INegocioService, NegocioService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ITarjetaService, TarjetaService>();
 
 
 builder.Services.AddQuartz(q =>
