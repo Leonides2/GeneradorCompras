@@ -2,28 +2,56 @@
 using Bogus;
 using GeneradorCompras.Models;
 using GeneradorCompras.Models.Interface;
-using GeneradorCompras.Service;
+using GeneradorCompras.Models.Service;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
 namespace GeneradorCompras.Models.Service
 {
     public class TarjetaService : ITarjetaService
     {
-        private readonly Faker<Tarjeta> _faker;
 
-        public TarjetaService()
+        private readonly AppDbContext _appDbContext;
+
+        public TarjetaService(AppDbContext context)
         {
-            _faker = new Faker<Tarjeta>()
-                .RuleFor(t => t.ID, f => f.Random.Int(1, 1000))
-                .RuleFor(t => t.CardNumber, f => f.Finance.CreditCardNumber())
-                .RuleFor(t => t.CVV, f => f.Finance.CreditCardCvv())
-                .RuleFor(t => t.State, f => f.Random.Bool() ? "Activo" : "Inactivo")
-                .RuleFor(t => t.Funds, f => f.Finance.Amount());
+            _appDbContext = context;
         }
 
-        public List<Tarjeta> GenerateTarjetas(int count)
+        public async void DeleteTarjetas()
         {
-            return _faker.Generate(count);
+            var list = await _appDbContext.Tarjetas.ToListAsync();
+
+            _appDbContext.Tarjetas.RemoveRange(list);
+            await _appDbContext.SaveChangesAsync();
+        }
+
+        public async void GenerateTarjetas(int count)
+        {
+
+            var _faker = new Faker<Tarjeta>()
+                .RuleFor(t => t.CardNumber, f => f.Finance.CreditCardNumber())
+                .RuleFor(t => t.CVV, f => f.Finance.CreditCardCvv())
+                .RuleFor(t => t.State, f => f.Random.Bool())
+                .RuleFor(t => t.Funds, f => f.Random.Double());
+
+            _appDbContext.Tarjetas.AddRange(_faker.Generate(count));
+            await _appDbContext.SaveChangesAsync();
+        }
+
+        public async Task<Tarjeta> GetRandomCreditCard()
+        {
+            var random = new Random();
+            var list = await _appDbContext.Tarjetas.ToListAsync();
+            var maxIndex = list.Count();
+            var randomCard = random.Next(maxIndex);
+
+            return list[randomCard];
+        }
+
+        public Task<List<Tarjeta>> GetTarjetas()
+        {
+            return _appDbContext.Tarjetas.ToListAsync();
         }
     }
 }

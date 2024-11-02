@@ -1,6 +1,7 @@
 ﻿using EventStore.Client;
 using GeneradorCompras.Jobs;
 using GeneradorCompras.Models;
+using GeneradorCompras.Models.Interface;
 using GeneradorCompras.Models.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,18 +21,31 @@ namespace GeneradorCompras.Controllers
         private readonly EventStoreClient client;
         private readonly ICompraGenerator compraGenerator;
         private readonly INegocioService negocioService;
-        public ComprasController(AppDbContext context, EventStoreClient eventStore, ICompraGenerator _compraGenerator, INegocioService _negocioService) { 
+        private readonly IProductService productService;
+        private readonly ITarjetaService tarjetaService;
+        private readonly IUserService userService;
+        public ComprasController(AppDbContext context, EventStoreClient eventStore,
+            ICompraGenerator _compraGenerator, INegocioService _negocioService,
+            IUserService _userService, ITarjetaService _tarjetaService,
+            IProductService _productService
+
+            )
+        {
             _context = context;
             client = eventStore;
             compraGenerator = _compraGenerator;
             negocioService = _negocioService;
+            productService = _productService;
+            tarjetaService = _tarjetaService;
+            productService = _productService;
+            userService = _userService;
         }
 
         [HttpGet("/SubirUnaCompra")]
         public async Task<object> Subscribe()
         {
 
-            var compraList = compraGenerator.GeneratePurchase(1);
+            var compraList = await compraGenerator.GeneratePurchase(1);
 
             var compra = compraList.Select(u => u);
 
@@ -46,6 +60,8 @@ namespace GeneradorCompras.Controllers
                 return writeResult;
             }
 
+
+
             return "Hello";
             
         }
@@ -55,6 +71,9 @@ namespace GeneradorCompras.Controllers
         public string GeenerarRecursos()
         {
             negocioService.GenerateNegocios(100);
+            productService.GenerateProduct(100);
+            tarjetaService.GenerateTarjetas(50);
+            userService.GenerateUsers(30);
 
             return "RecursosGenerados";
         }

@@ -2,6 +2,6 @@
 {
     public interface ICompraGenerator
     {
-        public List<Compra> GeneratePurchase(int count);
+        Task<List<Compra>> GeneratePurchase(int count);
     }
 }

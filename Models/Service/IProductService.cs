@@ -2,6 +2,11 @@
 {
     public interface IProductService
     {
-        List<Product> GenerateProduct(int Count);
+        void GenerateProduct(int Count);
+        Task<List<Product>> GetProducts();
+
+        void DeleteProducts();
+
+        Task<List<Product>> GetRandomProducts();
     }
 }

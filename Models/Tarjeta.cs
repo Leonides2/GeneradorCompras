@@ -3,9 +3,9 @@
     public class Tarjeta
     {
    public int ID {  get; set; }
-   public int CardNumber {  get; set; }
-   public int CVV {  get; set; } 
-   public string? State {  get; set; }
+   public string CardNumber {  get; set; }
+   public string CVV {  get; set; } 
+   public bool State {  get; set; }
    public double Funds {  get; set; }
 
     }

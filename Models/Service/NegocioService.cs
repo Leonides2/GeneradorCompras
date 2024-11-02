@@ -15,8 +15,7 @@ namespace GeneradorCompras.Models.Service
         public async void GenerateNegocios(int count)
         {
             var faker = new Faker<Negocio>().
-                RuleFor(p => p.Name, f => f.Company.CompanyName()).
-                RuleFor(p => p.ID, f => f.UniqueIndex);
+                RuleFor(p => p.Name, f => f.Company.CompanyName());
 
             _appDbContext.Negocios.AddRange(faker.Generate(count));
             await _appDbContext.SaveChangesAsync();
@@ -35,6 +34,17 @@ namespace GeneradorCompras.Models.Service
 
             _appDbContext.Negocios.RemoveRange(list);
             await _appDbContext.SaveChangesAsync();
+        }
+
+        public Negocio GetRandomNegocio()
+        {
+            var random = new Random();
+            var userList = _appDbContext.Negocios.ToList();
+            var maxIndex = userList.Count();
+            var randomUser = random.Next(maxIndex);
+
+
+            return userList[randomUser];
         }
     }
 }

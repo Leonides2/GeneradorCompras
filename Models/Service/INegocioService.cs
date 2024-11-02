@@ -7,5 +7,7 @@
         Task<List<Negocio>> GetNegocios();
 
         void DeleteNegocios();
+
+        Negocio GetRandomNegocio();
     }
 }

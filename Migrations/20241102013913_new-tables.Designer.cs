@@ -3,6 +3,7 @@ using System;
 using GeneradorCompras.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GeneradorCompras.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241102013913_new-tables")]
+    partial class newtables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
@@ -68,6 +71,10 @@ namespace GeneradorCompras.Migrations
 
                     b.Property<int>("CommerceID")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("CommerceName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<int?>("CompraID")
                         .HasColumnType("INTEGER");

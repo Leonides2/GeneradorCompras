@@ -6,6 +6,12 @@ namespace GeneradorCompras.Models.Interface
 {
     public interface IUserService
     {
-        List<User> GenerateUsers(int count);
+        void GenerateUsers(int count);
+
+        Task<List<User>> GetUsarios();
+
+        void DeleteUsuarios();
+
+        User GetRandomUser();
     }
 }

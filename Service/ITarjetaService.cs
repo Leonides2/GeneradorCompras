@@ -6,6 +6,11 @@ namespace GeneradorCompras.Models.Interface
 {
     public interface ITarjetaService
     {
-        List<Tarjeta> GenerateTarjetas(int count);
+        void GenerateTarjetas(int count);
+        Task<List<Tarjeta>> GetTarjetas();
+
+        void DeleteTarjetas();
+
+        Task<Tarjeta> GetRandomCreditCard();
     }
 }

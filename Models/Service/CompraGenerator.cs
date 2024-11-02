@@ -1,30 +1,38 @@
 ﻿using Bogus;
+using GeneradorCompras.Models.Interface;
 
 namespace GeneradorCompras.Models.Service
 {
     public class CompraGenerator: ICompraGenerator
     {
         private readonly IProductService productService;
-        public CompraGenerator(IProductService _productService)
+        private readonly IUserService userService;
+        public CompraGenerator(IProductService _productService, IUserService _userService)
         {
             productService = _productService;
+            userService = _userService;
         }
 
-        public List<Compra> GeneratePurchase(int count)
+        public async Task<List<Compra>> GeneratePurchase(int count)
         {
 
             var faker = new Faker<Compra>()
-                .RuleFor(P => P.ID, f => f.IndexFaker + 1)
-                .RuleFor(P => P.Details, f => productService.GenerateProduct(f.Random.Int(1, 5)))
-                .RuleFor(P => P.Total, f => 0)
-                .RuleFor(P => P.IsSuccess, f => f.Random.Bool());
+                .RuleFor(P => P.ID, f => f.UniqueIndex)
+                .RuleFor(P => P.Total, f => 0);
 
             var compras = faker.Generate(count);
+
+            foreach (var c in compras)
+            {
+                c.Details = await productService.GetRandomProducts();
+                c.User = userService.GetRandomUser();
+            }
 
             foreach (Compra compra in compras)
             {
                 compra.Total = compra.Details.Select(product => product.Price).Sum();
             }
+
 
             return compras;
         }
