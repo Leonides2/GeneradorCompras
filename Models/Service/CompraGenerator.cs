@@ -1,5 +1,4 @@
 ﻿using Bogus;
-using GeneradorCompras.Models.Interface;
 
 namespace GeneradorCompras.Models.Service
 {

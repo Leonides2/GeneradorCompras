@@ -1,7 +1,6 @@
 ﻿// Models/Service/UserService.cs
 using Bogus;
 using GeneradorCompras.Models;
-using GeneradorCompras.Models.Interface;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
@@ -36,7 +35,7 @@ namespace GeneradorCompras.Models.Service
 
             foreach (var u in usuarios)
             {
-                u.CreditCard = _tarjetaService.GetRandomCreditCard().Id;
+                u.CreditCard = (await _tarjetaService.GetRandomCreditCard()).ID;
             }
 
             _appDbContext.Usuarios.AddRange(usuarios);

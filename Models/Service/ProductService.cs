@@ -27,7 +27,7 @@ namespace GeneradorCompras.Models.Service
         {
             var faker = new Faker<Product>()
                 .RuleFor(P => P.Price, f => Double.Parse(f.Commerce.Price(1, 1000, 2, "")))
-                .RuleFor(P => P.Name, f => f.Name.FullName())
+                .RuleFor(P => P.Name, f => f.Commerce.Product())
                 .RuleFor(P => P.Count, f => f.Random.Int(1, 100))
                 .RuleFor(P => P.Category, f => f.Commerce.Department());
 

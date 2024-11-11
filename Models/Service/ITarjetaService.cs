@@ -1,13 +1,14 @@
 ﻿// Models/Interface/ITarjetaService.cs
-using GeneradorCompras.Models;
 using System.Collections.Generic;
 
-namespace GeneradorCompras.Models.Interface
+namespace GeneradorCompras.Models.Service
 {
     public interface ITarjetaService
     {
         void GenerateTarjetas(int count);
         Task<List<Tarjeta>> GetTarjetas();
+
+        Task<Tarjeta> PutTarjeta(int id, Tarjeta tarjeta);
 
         void DeleteTarjetas();
 

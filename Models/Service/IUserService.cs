@@ -1,8 +1,7 @@
 ﻿// Models/Interface/IUserService.cs
-using GeneradorCompras.Models;
 using System.Collections.Generic;
 
-namespace GeneradorCompras.Models.Interface
+namespace GeneradorCompras.Models.Service
 {
     public interface IUserService
     {
