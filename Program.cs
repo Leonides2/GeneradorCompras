@@ -38,6 +38,7 @@ builder.Services.AddScoped<ICompraGenerator, CompraGenerator>();
 builder.Services.AddScoped<INegocioService, NegocioService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITarjetaService, TarjetaService>();
+builder.Services.AddScoped<IErrorService, ErrorService>();
 
 
 builder.Services.AddQuartz(q =>

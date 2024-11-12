@@ -12,7 +12,7 @@ namespace GeneradorCompras.Models.Service
 
             var error  = fake.Generate(1);
 
-            var err = error[1];
+            var err = error[0];
             return err;
         }
     }

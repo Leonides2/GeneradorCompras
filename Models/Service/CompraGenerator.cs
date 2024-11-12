@@ -31,8 +31,6 @@ namespace GeneradorCompras.Models.Service
             {
                 compra.Total = compra.Details.Select(product => product.Price).Sum();
             }
-
-
             return compras;
         }
     }
