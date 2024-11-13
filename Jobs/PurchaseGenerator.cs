@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Text.Json;
 using System.Net.Sockets;
+using static System.Net.WebRequestMethods;
 
 
 namespace GeneradorCompras.Jobs
@@ -17,42 +18,50 @@ namespace GeneradorCompras.Jobs
         private readonly ICompraGenerator compraGenerator;
         private readonly AppDbContext appDbContext;
         private readonly EventStoreClient client;
-        private readonly IErrorService errorService;
-        private readonly string localIp;
+        private readonly string Ruta;
 
-        public PurchaseGenerator(ICompraGenerator _compraGenerator, AppDbContext _appDbContext, EventStoreClient eventStore, IErrorService error)
+        public PurchaseGenerator(ICompraGenerator _compraGenerator, AppDbContext _appDbContext, EventStoreClient eventStore)
         {
             compraGenerator = _compraGenerator;
             appDbContext = _appDbContext;
             client = eventStore; 
-            errorService = error;
-            localIp = "26.245.229.75";
+            Ruta = "http://tn8sc7sf-7120.use2.devtunnels.ms/api/LogErrors";
         }
+
+        private struct ErrorResponse{
+            private string LogID;
+            private Compra purchase;
+        };
+
 
         public async Task Execute(IJobExecutionContext context)
         {
             try
                 {
                 var compra = await compraGenerator.GeneratePurchase(1);
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
 
-                    if(compra != null)
+                
+
+                if (compra != null)
 
                     foreach (var item in compra)
                     {
                         var card = appDbContext.Tarjetas.FirstOrDefault(t => t.ID == item.User.CreditCard);
-                        var error = errorService.GenerateError();
 
                         if(card != null && card.State == false)
                         {
-                            error.ErrorObject = item;
 
                             var ErrorSend = new ErrorDto
                             {
-                                error = error,
-                                IsRetriable = true,
-                                Code = null,
+                                purchase = item,
+                                isRetriable = true,
+                                Code = "",
                                 errorType = "Controlado",
-                                Message = "No se pudo realizar la compra por tarjeta vencida"
+                                message = "No se pudo realizar la compra por tarjeta vencida"
                             };
 
 
@@ -63,7 +72,11 @@ namespace GeneradorCompras.Jobs
                                 {
                                     var JsonResponse = JsonContent.Create(ErrorSend);
                                     using HttpResponseMessage response =
-                                    await cliente.PostAsync("http://26.46.46.157:5178/api/LogErrors", JsonResponse);
+                                    await cliente.PostAsync(Ruta, JsonResponse);
+
+                                    string responseBody = await response.Content.ReadAsStringAsync();
+                                   
+                                    Console.WriteLine(responseBody);
                                 }
                             }
                             catch (Exception ex)
@@ -77,15 +90,13 @@ namespace GeneradorCompras.Jobs
                         if (card != null && item.Total > card.Funds)
                         {
 
-                            error.ErrorObject = item;
-
                             var ErrorSend = new ErrorDto
                             {
-                                error = error,
-                                IsRetriable = true,
-                                Code = null,
+                                purchase = item,
+                                isRetriable = true,
+                                Code = "",
                                 errorType = "Controlado",
-                                Message = "No se pudo realizar la compra por fondos insuficientes"
+                                message = "No se pudo realizar la compra por fondos insuficientes"
                             };
 
 
@@ -96,7 +107,8 @@ namespace GeneradorCompras.Jobs
                                 {
                                     var JsonResponse = JsonContent.Create(ErrorSend);
                                     using HttpResponseMessage response =
-                                    await cliente.PostAsync("http://26.46.46.157:5178/api/LogErrors", JsonResponse);
+                                    await cliente.PostAsync(Ruta, JsonResponse);
+                                    Console.WriteLine(response.Content);
                                 }
                             }
                             catch (Exception ex)
@@ -128,7 +140,6 @@ namespace GeneradorCompras.Jobs
                             }
 
                             Console.WriteLine($"Compra realizada exitosamente: {JsonSerializer.Serialize(item)}");
-                            Console.WriteLine("");
                         }
                     }
 
@@ -139,23 +150,23 @@ namespace GeneradorCompras.Jobs
             }
             catch (Exception exception){
 
-                var error = errorService.GenerateError();
 
                 var ErrorSend = new ErrorDto {
-                    error = error,
-                    IsRetriable = false,
+                    purchase = null,
+                    isRetriable = false,
                     Code = exception.ToString(),
                     errorType = "No controlado",
-                    Message = exception.Message
+                    message = exception.Message
                 };
                 
                 using (var cliente = new HttpClient()) {
 
-                   var JsonResponse = JsonContent.Create(error);
+                   var JsonResponse = JsonContent.Create(ErrorSend);
                    using HttpResponseMessage response = 
-                   await cliente.PostAsync("http://26.46.46.157:5178/api/LogErrors", JsonResponse);
+                   await cliente.PostAsync(Ruta, JsonResponse);
+                    Console.WriteLine(response.Content);
                 }
-                Console.WriteLine($"Error: {JsonSerializer.Serialize(ErrorSend)}");
+                Console.WriteLine($"Error no controlado");
             }
             await Task.CompletedTask;
         }

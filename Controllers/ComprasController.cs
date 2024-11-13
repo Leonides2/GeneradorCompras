@@ -146,6 +146,8 @@ namespace GeneradorCompras.Controllers
 
             var data = await validateCompra(compra);
 
+            Console.WriteLine("------------------compra------------------");
+
             if (data != null)
             {
                return false;
@@ -163,9 +165,10 @@ namespace GeneradorCompras.Controllers
                                nameof(compra),
                                JsonSerializer.SerializeToUtf8Bytes(compra));
 
+            Console.WriteLine("------------------compra------------------");
             try
             {
-                var writeResult = await client.AppendToStreamAsync("compras",
+                var writeResult = await client.AppendToStreamAsync("Compra",
                                                   StreamState.Any,
                                                    new[] { eventData });
             }
@@ -189,9 +192,14 @@ namespace GeneradorCompras.Controllers
         public async Task<Compra> validateCompra(Compra compra)
         {
             var card = await _context.Tarjetas.FirstOrDefaultAsync(t => t.ID == compra.User.CreditCard);
-            if ((card != null && compra.Total < card.Funds) || card != null && card.State == false)
+            if (card != null && compra.Total < card.Funds)
             {
                 return compra;
+            }
+            if (card != null && card.State == false)
+            {
+                return compra;
+
             }
             return null;
         }

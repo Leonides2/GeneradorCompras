@@ -2,10 +2,11 @@
 {
     public class ErrorDto
     {
-        public required Error error {  get; set; }
+        public Compra? purchase { get; set; }
+        public DateTime createdAt { get; set; } = DateTime.Now;
         public string? Code { get; set; }
         public required string errorType { get; set; }
-        public required string Message { get; set; }
-        public bool IsRetriable { get; set; } = true;
+        public required string message { get; set; }
+        public bool isRetriable { get; set; } = true;
     }
 }
