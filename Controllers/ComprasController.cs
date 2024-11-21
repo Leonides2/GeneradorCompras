@@ -121,24 +121,6 @@ namespace GeneradorCompras.Controllers
             return Ok(list);
         }
 
-        [HttpGet]
-        [Route("ReturnRandomTarjeta")]
-        public async Task<IActionResult> GetRT()
-        {
-            var list = await tarjetaService.GetRandomCreditCard();
-            return Ok(list);
-        }
-
-        // POST api/<ComprasController>
-        [HttpGet]
-        [Route("EliminarNegocios")]
-        public string eliminarNegocios()
-        {
-            negocioService.DeleteNegocios();
-            return "Negocios eliminados";
-        }
-
-
         [HttpPost]
         [Route("Retry")]
         public async Task<bool> Post([FromBody] Compra compra)

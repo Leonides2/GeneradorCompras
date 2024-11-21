@@ -28,12 +28,6 @@ namespace GeneradorCompras.Jobs
             Ruta = "https://2m8z6tnp-7120.use.devtunnels.ms/api/LogErrors";
         }
 
-        private struct ErrorResponse{
-            private string LogID;
-            private Compra purchase;
-        };
-
-
         public async Task Execute(IJobExecutionContext context)
         {
             try
