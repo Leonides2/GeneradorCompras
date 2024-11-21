@@ -93,7 +93,7 @@ namespace GeneradorCompras.Controllers
             tarjetaService.DeleteTarjetas();
             userService.DeleteUsuarios();
 
-            return "RecursosGenerados";
+            return "RecursosEliminados";
         }
 
         // GET api/<ComprasController>/5
@@ -143,10 +143,10 @@ namespace GeneradorCompras.Controllers
         [Route("Retry")]
         public async Task<bool> Post([FromBody] Compra compra)
         {
+            Console.WriteLine("------------------compraRetry------------------");
 
             var data = await validateCompra(compra);
 
-            Console.WriteLine("------------------compra------------------");
 
             if (data != null)
             {
@@ -165,7 +165,7 @@ namespace GeneradorCompras.Controllers
                                nameof(compra),
                                JsonSerializer.SerializeToUtf8Bytes(compra));
 
-            Console.WriteLine("------------------compra------------------");
+            Console.WriteLine("------------------compraSuccess------------------");
             try
             {
                 var writeResult = await client.AppendToStreamAsync("Compra",
@@ -192,6 +192,7 @@ namespace GeneradorCompras.Controllers
         public async Task<Compra> validateCompra(Compra compra)
         {
             var card = await _context.Tarjetas.FirstOrDefaultAsync(t => t.ID == compra.User.CreditCard);
+
             if (card != null && compra.Total < card.Funds)
             {
                 return compra;

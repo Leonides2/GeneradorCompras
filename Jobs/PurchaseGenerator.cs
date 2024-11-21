@@ -25,7 +25,7 @@ namespace GeneradorCompras.Jobs
             compraGenerator = _compraGenerator;
             appDbContext = _appDbContext;
             client = eventStore; 
-            Ruta = "http://tn8sc7sf-7120.use2.devtunnels.ms/api/LogErrors";
+            Ruta = "https://2m8z6tnp-7120.use.devtunnels.ms/api/LogErrors";
         }
 
         private struct ErrorResponse{
