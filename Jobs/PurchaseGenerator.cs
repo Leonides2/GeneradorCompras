@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 using System.Text.Json;
 using System.Net.Sockets;
 using static System.Net.WebRequestMethods;
+using Microsoft.AspNetCore.Mvc;
 
 
 namespace GeneradorCompras.Jobs
@@ -54,7 +55,7 @@ namespace GeneradorCompras.Jobs
                                 purchase = item,
                                 isRetriable = true,
                                 Code = "",
-                                errorType = "Controlado",
+                                errorType = "CONTROLLED",
                                 message = "No se pudo realizar la compra por tarjeta vencida"
                             };
 
@@ -89,7 +90,7 @@ namespace GeneradorCompras.Jobs
                                 purchase = item,
                                 isRetriable = true,
                                 Code = "",
-                                errorType = "Controlado",
+                                errorType = "CONTROLLED",
                                 message = "No se pudo realizar la compra por fondos insuficientes"
                             };
 
@@ -149,7 +150,7 @@ namespace GeneradorCompras.Jobs
                     purchase = null,
                     isRetriable = false,
                     Code = exception.ToString(),
-                    errorType = "No controlado",
+                    errorType = "UNCONTROLLED",
                     message = exception.Message
                 };
                 
